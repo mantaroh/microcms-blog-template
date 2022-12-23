@@ -1,0 +1,43 @@
+---
+import { microcmsApiClient } from "../../lib/microcms"
+
+
+export async function getStaticPaths() {
+    const contents = await microcmsApiClient.getList({endpoint: 'blogs'})
+    const pages = contents.contents.map((content => {
+        const title = content.title
+        const description = content.description
+        const date = content.date
+        const image = content.image.url
+        const body = content.body
+        const alias = content.id
+        return {
+            params: { alias },
+            props: {
+                title,
+                description,
+                date,
+                image,
+                body,
+            },
+        }
+    }))
+    return pages;
+}
+
+const { title, description, date, image, body } = Astro.props;
+---
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{title}</title>
+    </head>
+  <body>
+    <img src={`${image}`} alt={`${description}`}>
+    <h1>{title}</h1>
+    <time>{date}</time>
+    <article set:html={body} />
+  </body>
+</html>
